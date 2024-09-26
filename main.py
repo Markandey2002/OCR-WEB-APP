@@ -1,26 +1,49 @@
+import os
+import urllib.request
+import platform
 import streamlit as st
 from PIL import Image, ImageEnhance, ImageFilter
 import pytesseract
 import cv2
 import numpy as np
 import re
+import shutil
 
-# Set the path to the Tesseract executable
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+# Function to install Tesseract dynamically
+def install_tesseract():
+    if platform.system() == "Linux":
+        # Install Tesseract for Linux
+        if not shutil.which('tesseract'):
+            os.system("sudo apt-get update")
+            os.system("sudo apt-get install -y tesseract-ocr")
+    elif platform.system() == "Windows":
+        # Download and install Tesseract for Windows
+        tesseract_url = "https://digi.bib.uni-mannheim.de/tesseract/tesseract-ocr-w64-setup-v5.0.0-alpha.20201127.exe"
+        tesseract_exe_path = "tesseract-installer.exe"
+        if not shutil.which('tesseract'):
+            urllib.request.urlretrieve(tesseract_url, tesseract_exe_path)
+            os.system(tesseract_exe_path)
+            os.remove(tesseract_exe_path)
+
+        # Set Tesseract path for Windows
+        pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+    else:
+        st.error("Unsupported OS: Tesseract installation not available.")
+        return
+
+# Call the function to install Tesseract
+install_tesseract()
 
 # Function to preprocess and extract text from the uploaded image
 def extract_text(image):
     try:
         img = Image.open(image)
-        
+
         # Optional: Image preprocessing to improve OCR accuracy
         img = img.convert('L')  # Convert to grayscale
         img = img.filter(ImageFilter.SHARPEN)  # Sharpen image
         enhancer = ImageEnhance.Contrast(img)
         img = enhancer.enhance(2)  # Enhance contrast
-
-        # OR use OpenCV preprocessing if needed
-        # img = preprocess_image(img)
 
         # Extract text using pytesseract for Hindi and English
         extracted_text = pytesseract.image_to_string(img, lang='hin+eng', config='--psm 6')
@@ -46,10 +69,10 @@ def highlight_keyword(text, keyword):
 def main():
     st.title("OCR Web Application")
     st.write("Upload an image containing text in Hindi and English for OCR processing.")
-    
+
     # File uploader for image
     uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
-    
+
     if uploaded_file is not None:
         # Display uploaded image
         st.image(uploaded_file, caption='Uploaded Image', use_column_width=True)
@@ -57,7 +80,7 @@ def main():
         # Extract text from image
         with st.spinner("Extracting text from image..."):
             extracted_text = extract_text(uploaded_file)
-        
+
         # Display the extracted text
         st.text_area("Extracted Text", extracted_text, height=300)
 
@@ -70,7 +93,7 @@ def main():
 
                 # Highlight the keyword in the extracted text
                 highlighted_text = highlight_keyword(extracted_text, search_keyword)
-                
+
                 # Display the highlighted text using st.markdown to render HTML
                 st.markdown(highlighted_text, unsafe_allow_html=True)
             else:
