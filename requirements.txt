@@ -1,0 +1,6 @@
+streamlit
+Pillow
+pytesseract
+opencv-python-headless
+numpy
+regex
