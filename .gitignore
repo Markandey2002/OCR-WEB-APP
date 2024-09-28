@@ -1,2 +1,15 @@
-# Ignore the virtual environment
+# Ignore virtual environment folder
 ocr_env/
+
+# Ignore Python cache files
+__pycache__/
+
+# Ignore Python bytecode files
+*.py[cod]
+
+# Ignore system-specific files
+*.DS_Store
+*.log
+
+# Ignore IDE-specific settings
+.vscode/
