@@ -3,6 +3,13 @@ from PIL import Image
 from ocr_preprocess import preprocess_image, enhance_image
 from ocr_engine import install_tesseract, extract_text
 import re
+import pytesseract
+
+# Set the Tesseract path (Windows example; modify accordingly)
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'  # Adjust if necessary
+
+# (Keep the rest of your imports and code as it is)
+
 
 # Ensure Tesseract is installed and configured
 install_tesseract()
