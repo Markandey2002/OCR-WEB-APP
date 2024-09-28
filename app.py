@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 from PIL import Image
 from ocr_preprocess import preprocess_image, enhance_image
@@ -5,11 +6,12 @@ from ocr_engine import install_tesseract, extract_text
 import re
 import pytesseract
 
-# Set the Tesseract path (Windows example; modify accordingly)
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'  # Adjust if necessary
-
-# (Keep the rest of your imports and code as it is)
-
+# Set the Tesseract path (modify if necessary)
+tesseract_path = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+if not os.path.exists(tesseract_path):
+    st.error("Tesseract is not installed or the path is incorrect. Please check your installation.")
+else:
+    pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
 # Ensure Tesseract is installed and configured
 install_tesseract()
