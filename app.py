@@ -1,20 +1,11 @@
-import os
 import streamlit as st
 from PIL import Image
 from ocr_preprocess import preprocess_image, enhance_image
-from ocr_engine import install_tesseract, extract_text
+from ocr_engine import extract_text  # Removed install_tesseract since Streamlit can't install system-level software
 import re
 import pytesseract
 
-# Set the Tesseract path (modify if necessary)
-tesseract_path = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-if not os.path.exists(tesseract_path):
-    st.error("Tesseract is not installed or the path is incorrect. Please check your installation.")
-else:
-    pytesseract.pytesseract.tesseract_cmd = tesseract_path
-
-# Ensure Tesseract is installed and configured
-install_tesseract()
+# No need to set a custom Tesseract path for cloud environments
 
 # Function to highlight a keyword in the extracted text
 def highlight_keyword(text, keyword):
@@ -41,10 +32,11 @@ def main():
 
         # Extract text from the preprocessed and enhanced image
         with st.spinner("Extracting text..."):
-            extracted_text = extract_text(enhanced_image)
-
-        # Display the extracted text
-        st.text_area("Extracted Text", extracted_text, height=300)
+            try:
+                extracted_text = extract_text(enhanced_image)
+                st.text_area("Extracted Text", extracted_text, height=300)
+            except Exception as e:
+                st.error(f"Error extracting text: {e}")
 
         # Keyword search functionality
         search_keyword = st.text_input("Enter keyword to search in extracted text:")
