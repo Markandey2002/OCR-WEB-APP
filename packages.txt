@@ -1,2 +1,2 @@
 tesseract-ocr
-tesseract-ocr-hin  # Add this line for Hindi support
+
